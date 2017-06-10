@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
 
 
 
@@ -28,18 +29,24 @@ void get_value_from_n_bits_array(unsigned char *byte_array, T &output_value)
 
 int main(int argc, char *argv[])
 {
-	unsigned char byte_array[100];
+	//unsigned char byte_array[100];
+	//imagen 4x5
+	unsigned int index = 2;
+	unsigned int cols  = 5;
+	cout << floor(index/cols) <<endl;
+	cout << index%cols <<endl;
+
 	
     //string name("Julio Cesar echeverr marulanda es una graaaan persona que estudia ingenieria electronica y disfruta de la programación");
 	/*string name("Julio");
 	char *cname = new char[500];
 	cout << name[0] <<endl;
 	cout <<"sizeof(name[0]) = "<<sizeof name[0] <<endl;
-	strcpy(cname, name.c_str());*/
+	strcpy(cname, name.c_str());
 	
-	/*ASCII value of J = 74 = b0100_1010*/
+	//ASCII value of J = 74 = b0100_1010
 	// print cname[0] bits
-	/*
+	
 	for (unsigned int i = 0; i < name.length(); i++)
 	{
 		get_n_bits_array(byte_array, cname[i]);
@@ -48,7 +55,7 @@ int main(int argc, char *argv[])
 		cout<<endl;
 	}
 	delete []cname;
-	cname = NULL;*/
+	cname = NULL;
 	unsigned int h = 855649;
 	get_n_bits_array(byte_array, h);
 	for (unsigned int j = 0; j < sizeof(int)*8; j++)
@@ -56,7 +63,7 @@ int main(int argc, char *argv[])
 	cout <<endl;
 	unsigned int w;
     get_value_from_n_bits_array(byte_array, w);
-	cout<<"w = "<<w<<endl;
+	cout<<"w = "<<w<<endl;*/
 	
     return 0;
 }
