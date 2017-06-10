@@ -55,9 +55,11 @@ void assembly_bytes(unsigned char *byte_array,T &data)
 unsigned int steg_n_bytes_array(unsigned char **matrix, int rows, int cols, unsigned char *byte_array,unsigned int nbytes, unsigned int position)
 {
 	unsigned int array_length = nbytes * BYTE_SIZE;
+	unsigned int initial_row = floor(position/cols);
+	unsigned int initial_col = position%cols;
 	unsigned int last_position = 0;
-	for(int i = 0; i < rows; i++)
-		for(int j = 0; j < cols; j++)
+	for(int i = initial_row; i < rows; i++)
+		for(int j = initial_col; j < cols; j++)
 		{
 			matrix[i][j] = (matrix[i][j]&(~1))|byte_array[last_position];
 			last_position ++;
@@ -154,12 +156,14 @@ int main(int argc, char *argv[])
 	
 	/**********Apply steganography function*********/
 	/*Save data length in the first 10 pixels*/
+	unsigned int block_pos = 10;
 	byte_array_len = get_n_bits_array(byte_array, data_length);
 	std::cout<<"Original first pixels values" <<std::endl;
-	for (unsigned int i = 0; i < byte_array_len; i++)
+	for (unsigned int i = 0; i < byte_array_len+block_pos; i++)
 		std::cout <<" "<<(int)pixels_array[0][i];
 	std::cout<<std::endl;
-    steg_n_bytes_array(pixels_array, image.rows, image.cols, byte_array, byte_array_len);
+	
+    steg_n_bytes_array(pixels_array, image.rows, image.cols, byte_array, byte_array_len, block_pos);
 
 	//mostrar el stream de bits
 	std::cout<<"byte_array = ";
@@ -169,13 +173,13 @@ int main(int argc, char *argv[])
 	
 	//mostrar los primeros byte_array_len de pixels_array
 	std::cout<<"First pixels values" <<std::endl;
-	for (unsigned int i = 0; i < byte_array_len; i++)
+	for (unsigned int i = 0; i < byte_array_len+block_pos; i++)
 		std::cout <<" "<<(int)pixels_array[0][i];
 	std::cout<<std::endl;
 	
 	// recuperar el valor codificado en los 32 primeros pixels
 	//(unsigned char **matrix, int rows, int cols, unsigned int position, unsigned char *byte_array, unsigned int nbytes)
-	inv_steg_n_bytes(pixels_array, image.rows, image.cols, 0, byte_array, 4);
+	inv_steg_n_bytes(pixels_array, image.rows, image.cols, block_pos, byte_array, 4);
 	//mostrar primeros 4 bytes	
 	for (int i = 0; i < 4; i++)
 		std::cout <<(int)byte_array[i];
