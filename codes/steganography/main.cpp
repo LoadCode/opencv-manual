@@ -40,7 +40,19 @@ void get_value_from_n_bits_array(unsigned char *byte_array, T &output_value)
 		output_value += byte_array[i]<<u;
 }
 
-unsigned int steg_n_bytes_array(unsigned char **matrix, int rows, int cols, unsigned char *byte_array,unsigned int nbytes)
+template <typename T>
+void assembly_bytes(unsigned char *byte_array,T &data)
+{
+	data = 0;
+	size_t size = sizeof data;
+	int byte_shift = size - 1;
+	for(unsigned int i = 0; i < size; i++, byte_shift--)
+	{
+		data |= byte_array[i]<<(byte_shift*BYTE_SIZE);
+	}
+}
+
+unsigned int steg_n_bytes_array(unsigned char **matrix, int rows, int cols, unsigned char *byte_array,unsigned int nbytes, unsigned int position)
 {
 	unsigned int array_length = nbytes * BYTE_SIZE;
 	unsigned int last_position = 0;
@@ -54,6 +66,36 @@ unsigned int steg_n_bytes_array(unsigned char **matrix, int rows, int cols, unsi
 		}
 	return last_position;
 }
+
+unsigned int inv_steg_n_bytes(unsigned char **matrix, unsigned int rows, unsigned int cols, unsigned int position, unsigned char *byte_array, unsigned int nbytes)
+{
+	
+	unsigned int initial_row = floor(position/cols);
+	unsigned int initial_col = position%cols;
+	unsigned int byte_index  = 0;
+	unsigned int bit_index   = BYTE_SIZE-1;
+	unsigned int counter     = 0;
+	std::cout << "Initial row and col = ("<<initial_row<<" "<<initial_col<<")"<<std::endl;
+	for(unsigned int i = initial_row; i < rows; i++)
+	{
+		for (unsigned int j = initial_col; j < cols; j++)
+		{
+			byte_array[byte_index] |= (matrix[i][j]&1) << bit_index;
+			counter++;
+			bit_index--;
+			if(counter == BYTE_SIZE)
+			{
+				counter = 0;
+				bit_index = BYTE_SIZE-1;//shift from bit 7 (MSB)
+				byte_index++;
+				if(byte_index == nbytes)
+					return 0;
+			}
+		}
+	}
+	return 0;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -130,6 +172,17 @@ int main(int argc, char *argv[])
 	for (unsigned int i = 0; i < byte_array_len; i++)
 		std::cout <<" "<<(int)pixels_array[0][i];
 	std::cout<<std::endl;
+	
+	// recuperar el valor codificado en los 32 primeros pixels
+	//(unsigned char **matrix, int rows, int cols, unsigned int position, unsigned char *byte_array, unsigned int nbytes)
+	inv_steg_n_bytes(pixels_array, image.rows, image.cols, 0, byte_array, 4);
+	//mostrar primeros 4 bytes	
+	for (int i = 0; i < 4; i++)
+		std::cout <<(int)byte_array[i];
+	std::cout <<std::endl;
+    unsigned int recuperado;
+	assembly_bytes(byte_array,recuperado);
+	std::cout <<"recuperado = "<<recuperado<<std::endl;
 	/*Save data from 11th pixel*/
 	
 	
